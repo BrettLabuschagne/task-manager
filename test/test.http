@@ -1,0 +1,69 @@
+// Register a New user
+POST http://localhost:3000/api/register HTTP/1.1
+content-type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password"
+}
+
+###
+
+// Register a Login a user
+POST http://localhost:3000/api/login HTTP/1.1
+content-type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password"
+}
+
+###
+
+// Create a Tag
+POST http://localhost:3000/api/labels HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{ACCESS_JWT}}
+
+{
+  "name" : "Urgent"
+}
+
+###
+
+// Create a Status
+POST http://localhost:3000/api/statuses HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{ACCESS_JWT}}
+
+{
+  "name" : "New"
+}
+
+
+
+###
+
+// Create a Task
+POST http://localhost:3000/api/tasks HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{ACCESS_JWT}}
+
+{
+  "title": "Finish the project",
+  "description": "Need to complete the project by EOD",
+  "dueDate": "2024-09-09",
+  "priority": 1,
+  "userId": 1,
+  "statusId": 1,
+  "labelIds": [1]
+}
+
+###
+
+// Get Tasks
+GET http://localhost:3000/api/tasks HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{ACCESS_JWT}}
+
