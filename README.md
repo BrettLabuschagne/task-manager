@@ -47,7 +47,7 @@ DB_NAME=Database Name
 JWT_SECRET=HERE
 ```
 
-# Comiling
+# Compiling
 
 Once you are done testing and are ready to compile the project you can run the following command `npx tsc` this will then create a folder called `dist`
 
