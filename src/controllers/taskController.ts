@@ -39,7 +39,13 @@ const createTask = async (req: Request, res: Response) => {
 const getTasks = async (req: Request, res: Response) => {
   const { status, priority, dueDate, sortField, sortOrder } = req.query;
 
-  const filterConditions: any = {};
+  if (!req.user) {
+    return res.status(401).json({ message: 'User not authenticated' });
+  }
+
+  const userId = req.user.id;
+
+  const filterConditions: any = { userId };
   if (status) {
     filterConditions.status = status;
   }
@@ -73,12 +79,29 @@ const getTasks = async (req: Request, res: Response) => {
 
 // Get a single task by ID
 const getTaskById = async (req: Request, res: Response) => {
+
+  if (!req.user) {
+    return res.status(401).json({ message: 'User not authenticated' });
+  }
+
+  const userId = req.user.id;
+
+
   try {
     const { id } = req.params;
     const task = await Task.findByPk(id, { include: [User, Status, Label] });
 
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
+    }
+
+    if (task.userId !== userId) {
+      return res.status(403).json({ message: 'Unauthorized to view this task' });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
     res.status(200).json(task);
@@ -89,6 +112,13 @@ const getTaskById = async (req: Request, res: Response) => {
 
 // Update a task
 const updateTask = async (req: Request, res: Response) => {
+
+  if (!req.user) {
+    return res.status(401).json({ message: 'User not authenticated' });
+  }
+
+  const userId = req.user.id;
+
   try {
     const { id } = req.params;
     const { title, description, dueDate, priority, userId, statusId, labelIds } = req.body;
@@ -97,6 +127,10 @@ const updateTask = async (req: Request, res: Response) => {
 
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
+    }
+
+    if (task.userId !== userId) {
+      return res.status(403).json({ message: 'Unauthorized to view this task' });
     }
 
     const user = await User.findByPk(userId);

@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { User } from '../models/User';
+
 
 dotenv.config();
 
@@ -12,12 +14,12 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET as string, (err, decodedToken) => {
     if (err) {
       return res.sendStatus(403);
     }
 
-    (req as any).user = user;
+    req.user = decodedToken as User;
     next();
   });
 };
