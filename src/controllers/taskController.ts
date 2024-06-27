@@ -3,6 +3,7 @@ import { Task } from '../models/Task';
 import { Label } from '../models/Label';
 import { User } from '../models/User';
 import { Status } from '../models/Status';
+import { Op } from 'sequelize';
 
 // Create a new task
 const createTask = async (req: Request, res: Response) => {
@@ -34,15 +35,41 @@ const createTask = async (req: Request, res: Response) => {
   }
 };
 
-// Get all tasks
+// Get all tasks which allows for filter and sorting
 const getTasks = async (req: Request, res: Response) => {
+  const { status, priority, dueDate, sortField, sortOrder } = req.query;
+
+  const filterConditions: any = {};
+  if (status) {
+    filterConditions.status = status;
+  }
+  if (priority) {
+    filterConditions.priority = priority;
+  }
+  if (dueDate) {
+    filterConditions.dueDate = {
+      [Op.lte]: new Date(dueDate as string),
+    };
+  }
+
+  const order: any[] = [];
+  if (sortField && sortOrder) {
+    order.push([sortField as string, sortOrder as string]);
+  }
+
   try {
-    const tasks = await Task.findAll({ include: [User, Status, Label] });
-    res.status(200).json(tasks);
+    const tasks = await Task.findAll({
+      where: filterConditions,
+      order: order.length ? order : undefined,
+    });
+
+    res.json(tasks);
   } catch (error) {
-    res.status(400).json({ error: 'Error fetching tasks' });
+    console.error('Error fetching tasks:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // Get a single task by ID
 const getTaskById = async (req: Request, res: Response) => {
