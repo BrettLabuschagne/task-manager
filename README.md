@@ -47,6 +47,12 @@ DB_NAME=Database Name
 JWT_SECRET=HERE
 ```
 
+# Comiling
+
+Once you are done testing and are ready to compile the project you can run the following command `npx tsc` this will then create a folder called `dist`
+
+Make sure to copy the .env file into the `dist` folder and then you are able to run all your node process managers from the dist folder
+
 # Testing
 
 In order order to run the tests there is a folder inside called `test` in the folder there are two files, `postman_collection.json` and `test.http`.
