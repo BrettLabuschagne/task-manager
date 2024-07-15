@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Label } from '../models/Label';
+import { Task } from '../models/Task';
 
 // Create a new label
 const createLabel = async (req: Request, res: Response) => {
@@ -57,4 +58,44 @@ const getLabels = async (req: Request, res: Response) => {
   }
 };
 
-export { createLabel, updateLabel, getLabels };
+
+// Add a label to a task
+const addLabelToTask = async (req: Request, res: Response) => {
+  const { taskId, labelId } = req.body;
+
+  try {
+    const task = await Task.findByPk(taskId);
+    const label = await Label.findByPk(labelId);
+
+    if (!task || !label) {
+      return res.status(404).json({ message: 'Task or Label not found' });
+    }
+
+    await task.$add('label', label);
+    return res.status(200).json({ message: 'Label added to task successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'An error occurred', error });
+  }
+}
+
+// Remove a label from a task
+const removeLabelFromTask = async (req: Request, res: Response) => {
+  const { taskId, labelId } = req.body;
+
+  try {
+    const task = await Task.findByPk(taskId);
+    const label = await Label.findByPk(labelId);
+
+    if (!task || !label) {
+      return res.status(404).json({ message: 'Task or Label not found' });
+    }
+
+    await task.$remove('label', label);
+    return res.status(200).json({ message: 'Label removed from task successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'An error occurred', error });
+  }
+}
+
+
+export { createLabel, updateLabel, getLabels, addLabelToTask, removeLabelFromTask };
